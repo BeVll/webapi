@@ -52,8 +52,16 @@ namespace webapi.Models
             this.isCancelled = el.GetProperty("header").GetProperty("status").GetProperty("cancelled").GetBoolean();
             this.HomeScore = el.GetProperty("header").GetProperty("teams")[0].GetProperty("score").GetInt32();
             this.AwayScore = el.GetProperty("header").GetProperty("teams")[1].GetProperty("score").GetInt32();
-            this.HomeColor = el.GetProperty("content").GetProperty("stats").GetProperty("teamColors").GetProperty("homeColors").GetProperty("color").ToString();
-            this.AwayColor = el.GetProperty("content").GetProperty("stats").GetProperty("teamColors").GetProperty("awayColors").GetProperty("colorAway").ToString();
+
+            if(el.GetProperty("general").GetProperty("teamColors")[0].TryGetProperty("color", out JsonElement color))
+                this.HomeColor = color.ToString();
+            else
+                this.HomeColor = el.GetProperty("general").GetProperty("teamColors").GetProperty("home").ToString();
+            if (el.GetProperty("general").GetProperty("teamColors")[0].TryGetProperty("color", out JsonElement color2))
+                this.AwayColor = color2.ToString();
+            else
+                this.AwayColor = el.GetProperty("general").GetProperty("teamColors").GetProperty("home").ToString();
+           
             this.UtcTime = el.GetProperty("header").GetProperty("status").GetProperty("utcTime").GetDateTime();
             if(this.isStarted && this.isGoing)
                 this.LiveTime = el.GetProperty("header").GetProperty("status").GetProperty("liveTime").GetProperty("short").ToString();
